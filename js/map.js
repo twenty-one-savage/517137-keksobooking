@@ -4,7 +4,7 @@ var ARR_LENGTH = 8;
 var PIN_HEIGHT = 40;
 var PIN_WIDTH = 40;
 
-var offerTitle = [
+var OFFER_TITLE = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -15,9 +15,10 @@ var offerTitle = [
   'Неуютное бунгало по колено в воде'
 ];
 
-var offerType = ['palace', 'flat', 'house', 'bungalo'];
-var offerCheckinCheckout = ['12:00', '13:00', '14:00'];
-var offerFeatures = [
+var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
+var OFFER_CHECKIN = ['12:00', '13:00', '14:00'];
+var OFFER_CHECKOUT = ['12:00', '13:00', '14:00'];
+var OFFER_FEATURES = [
   'wifi',
   'dishwasher',
   'parking',
@@ -26,11 +27,27 @@ var offerFeatures = [
   'conditioner'
 ];
 
-var offerPhotos = [
+var OFFER_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
+
+// Элемент в который мы будем вставлять пины
+var similarListElement = document.querySelector('.map__pins');
+
+// Шаблон пинов
+var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+// Элемент, в который мы будем вставлять объявление
+var similarCardElement = document.querySelector('.map');
+
+// Шаблон объявления
+var similarCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+
+// Контейнер, до которого мы будем вставлять элемент
+var before = similarCardElement.querySelector('.map__filters-container');
+
 
 // Функция для создания случайного целого числа
 function getRandomInt(min, max) {
@@ -58,12 +75,6 @@ document.querySelector('.map').classList.remove('map--faded');
 
 // Третий пункт задания
 
-// Элемент в который мы будем вставлять пины
-var similarListElement = document.querySelector('.map__pins');
-
-// Шаблон пинов
-var similarPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-
 // Массив с пинами
 var pins = [];
 
@@ -75,31 +86,31 @@ var createArray = function (arr) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        title: offerTitle[getRandomArrayElement(0, offerTitle.length)],
+        title: getRandomArrayElement(OFFER_TITLE),
         address: location.x + ', ' + location.y,
         price: getRandomInt(1000, 1000000),
-        type: getRandomArrayElement(0, offerType.length),
+        type: getRandomArrayElement(OFFER_TYPE),
         rooms: getRandomInt(1, 5),
         guests: getRandomInt(1, 10),
-        checkin: getRandomArrayElement(0, offerCheckinCheckout.length),
-        checkout: getRandomArrayElement(0, offerCheckinCheckout.length),
-        features: shuffle(offerFeatures),
+        checkin: getRandomArrayElement(OFFER_CHECKIN),
+        checkout: getRandomArrayElement(OFFER_CHECKOUT),
+        features: shuffle(OFFER_FEATURES),
         description: '',
-        photos: shuffle(offerPhotos)
+        photos: shuffle(OFFER_PHOTOS)
       },
       location: {
         x: getRandomInt(0, similarListElement.offsetWidth),
         y: getRandomInt(130, 630)
       }
     };
-    console.log(arr[i]);
   }
 };
 
+// Вызов функции
 createArray(pins);
 
-// Функция для создания карточки
-var renderPins = function (item) {
+// Функция для создания пина
+var createPins = function (item) {
   // Клонируем содержимое тега <template> и записываем в переменную
   var pinElement = similarPinTemplate.cloneNode(true);
   // Работаем со свойствами объекта (координаты, аватарка, адрес изображения картинки, альтернативный текст у картинки)
@@ -111,14 +122,13 @@ var renderPins = function (item) {
   return pinElement;
 };
 
-// Создаем пустой фрагмент
-var fragment = document.createDocumentFragment();
-
-// Функция для передачи во фрагмент
-var makeFragment = function (arr) {
+// Функция для отрисовки пинов
+var renderPins = function (arr) {
+  // Создаем пустой фрагмент
+  var fragment = document.createDocumentFragment();
   // Далее вставляем карточки во фрагмент
   for (var i = 0; i < arr.length; i++) {
-    fragment.appendChild(renderPins(arr[i]));
+    fragment.appendChild(createPins(arr[i]));
   }
   return fragment;
 };
@@ -126,35 +136,26 @@ var makeFragment = function (arr) {
 // Четвертый пункт задания
 
 // Вставляем содержимое фрагмента в DOM-дерево
-similarListElement.appendChild(makeFragment(pins));
+similarListElement.appendChild(renderPins(pins));
 
 // Пятый пункт задания
 
-// Элемент, в который мы будем вставлять объявление
-var similarCardElement = document.querySelector('.map');
-
-// Элемент до которого мы будем вставлять элемент
-var before = similarCardElement.querySelector('.map__filters-container');
-
-// Шаблон объявления
-var similarCardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-
 // Проверка popup__type
-var addType = function (obj) {
-  var result;
-  if (obj === 'flat') {
-    result = 'Квартира';
+var getRightType = function (obj) {
+  switch (obj) {
+    case 'flat': {
+      break;
+    }
+    case 'bungalo': {
+      break;
+    }
+    case 'house': {
+      break;
+    }
+    case 'palace': {
+      break;
+    }
   }
-  if (obj === 'bungalo') {
-    result = 'Бунгало';
-  }
-  if (obj === 'house') {
-    result = 'Дом';
-  }
-  if (obj === 'palace') {
-    result = 'Дворец';
-  }
-  return result;
 };
 
 // Функция для создания объявления
@@ -164,17 +165,39 @@ var createCard = function (item) {
   cardElement.querySelector('.popup__title').textContent = item.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = item.offer.address;
   cardElement.querySelector('.popup__text--address').textContent = item.offer.price + ' ₽/ночь.';
-  cardElement.querySelector('.popup__type').textContent = addType(item.offer.type);
-  cardElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + '.';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + '.' + ' Выезд до' + item.offer.checkout + '.';
-  cardElement.querySelector('.popup__features').textContent = item.offer.features;
+  cardElement.querySelector('.popup__type').textContent = getRightType(item.offer.type);
+  cardElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + ' гостей.';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + '.' + ' Выезд до ' + item.offer.checkout + '.';
+  cardElement.querySelector('.popup__features').innerHTML = '';
+  for (var i = 0; i < item.offer.features; i++) {
+    var li = document.createElement('li');
+    li.className = 'popup__feature popup__feature--' + item.offer.features;
+    cardElement.querySelector('.popup__features').appendChild(li);
+  }
   cardElement.querySelector('.popup__description').textContent = item.offer.description;
+  cardElement.querySelector('.popup__photos').innerHTML = '';
+  for (var j = 0; j < item.offer.photos; j++) {
+    var img = document.createElement('img');
+    img.className = 'popup__photo';
+    img.src = item.offer.photos[j];
+    img.alt = 'Фотография жилья';
+    img.width = 45;
+    img.height = 40;
+    cardElement.querySelector('.popup__photos').appendChild(img);
+    cardElement.querySelector('.popup__photos').querySelector('img').src = item.author.avatar[j];
+  }
+  return cardElement;
 };
 
 // Вставляем созданные карточки в блок .map до before
 var makeCard = function (item) {
-  fragment.appendChild(createCard(item));
+  // Создаем пустой фрагмент
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < ARR_LENGTH; i++) {
+    fragment.appendChild(createCard(item));
+  }
   similarCardElement.insertBefore(fragment, before);
 };
 
-makeCard(pins);
+// Вызов функции
+makeCard(pins[0]);
