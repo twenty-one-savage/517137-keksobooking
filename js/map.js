@@ -48,6 +48,7 @@ var similarCardTemplate = document.querySelector('#card').content.querySelector(
 // Контейнер, до которого мы будем вставлять элемент
 var before = similarCardElement.querySelector('.map__filters-container');
 
+// Служебные функции
 
 // Функция для создания случайного целого числа
 function getRandomInt(min, max) {
@@ -57,6 +58,11 @@ function getRandomInt(min, max) {
 // Случайное целое число в интервале массива
 var getRandomArrayElement = function (arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+};
+
+// Случайная длина массива
+var getRandomArrayLength = function (arr) {
+  return arr.slice(Math.floor(Math.random() * arr.length));
 };
 
 // Тасование массива (Фишер-Йетс)
@@ -94,9 +100,9 @@ var createArray = function (arr) {
         guests: getRandomInt(1, 10),
         checkin: getRandomArrayElement(OFFER_CHECKIN),
         checkout: getRandomArrayElement(OFFER_CHECKOUT),
-        features: shuffle(OFFER_FEATURES),
+        features: getRandomArrayLength(shuffle(OFFER_FEATURES)),
         description: '',
-        photos: shuffle(OFFER_PHOTOS)
+        photos: getRandomArrayElement(shuffle(OFFER_PHOTOS))
       },
       location: {
         x: getRandomInt(0, similarListElement.offsetWidth),
@@ -184,11 +190,10 @@ var createCard = function (item) {
     img.width = 45;
     img.height = 40;
     cardElement.querySelector('.popup__photos').appendChild(img);
-    cardElement.querySelector('.popup__photos').querySelector('img').src = item.author.avatar[j];
+    cardElement.querySelector('.popup__avatar').querySelector('img').src = item.author.avatar[j];
   }
   return cardElement;
 };
-
 // Вставляем созданные карточки в блок .map до before
 var makeCard = function (item) {
   // Создаем пустой фрагмент
@@ -201,3 +206,4 @@ var makeCard = function (item) {
 
 // Вызов функции
 makeCard(pins[0]);
+console.log(pins);
