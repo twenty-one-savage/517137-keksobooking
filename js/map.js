@@ -33,7 +33,7 @@ var OFFER_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-// Элемент в который мы будем вставлять пины
+// Элемент, в который мы будем вставлять пины
 var similarListElement = document.querySelector('.map__pins');
 
 // Шаблон пинов
@@ -49,7 +49,7 @@ var similarCardTemplate = document.querySelector('#card').content.querySelector(
 var fragment = document.createDocumentFragment();
 
 // Контейнер, до которого мы будем вставлять элемент
-var before = similarCardElement.querySelector('.map__filters-container');
+var filterContainer = similarCardElement.querySelector('.map__filters-container');
 
 // Служебные функции
 
@@ -134,7 +134,7 @@ var createPins = function (item) {
 
 // Функция для отрисовки пинов
 var renderPins = function (arr) {
-  // Далее вставляем карточки во фрагмент
+  // Вставляем пины во фрагмент
   for (var i = 0; i < arr.length; i++) {
     fragment.appendChild(createPins(arr[i]));
   }
@@ -143,30 +143,48 @@ var renderPins = function (arr) {
 
 // Четвертый пункт задания
 
-// Вставляем содержимое фрагмента в DOM-дерево
+// Вставляем содержимое фрагмента (пины) в DOM-дерево
 similarListElement.appendChild(renderPins(pins));
 
 // Пятый пункт задания
 
 // Проверка popup__type
-var getRightType = function (obj) {
-  switch (obj) {
-    case 'flat': {
-      break;
-    }
-    case 'bungalo': {
-      break;
-    }
-    case 'house': {
-      break;
-    }
-    case 'palace': {
-      break;
-    }
+var getRightType = function (type) {
+  switch (type) {
+    case 'flat':
+      return 'Квартира';
+    case 'bungalo':
+      return 'Бунгало';
+    case 'house':
+      return 'Дом';
+    case 'palace':
+      return 'Дворец';
+    default:
+      return '';
   }
 };
 
-//  Функция для создания особенностей в объявлении
+// Функция для определения правильного склонения слова "Комната"
+var getRightDeclensionRooms = function (item) {
+  var rightDeclension = ' комнаты для ';
+  if (item.offer.rooms % 10 === 1) {
+    rightDeclension = ' комната для ';
+  } else if (item.offer.rooms % 10 === 5) {
+    rightDeclension = ' комнат для ';
+  }
+  return rightDeclension;
+};
+
+// Функция для правильного склонения слова "Гость"
+var getRightDeclensionGuests = function (item) {
+  var rightDeclension = ' гостей.';
+  if (item.offer.guests === 1) {
+    rightDeclension = ' гостя.';
+  }
+  return rightDeclension;
+};
+
+//  Функция для создания удобств в объявлении
 var getFeatures = function (arr) {
   for (var i = 0; i < arr.length; i++) {
     var li = document.createElement('li');
@@ -175,6 +193,7 @@ var getFeatures = function (arr) {
   }
   return fragment;
 };
+
 //  Функция для создания фотографий в объявлении
 var getPhotos = function (arr) {
   for (var j = 0; j < arr.length; j++) {
@@ -197,7 +216,7 @@ var createCard = function (item) {
   cardElement.querySelector('.popup__text--address').textContent = item.offer.address;
   cardElement.querySelector('.popup__text--price').textContent = item.offer.price + ' ₽/ночь.';
   cardElement.querySelector('.popup__type').textContent = getRightType(item.offer.type);
-  cardElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + ' гостей.';
+  cardElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + getRightDeclensionRooms(item) + item.offer.guests + getRightDeclensionGuests(item);
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + '.' + ' Выезд до ' + item.offer.checkout + '.';
   cardElement.querySelector('.popup__features').innerHTML = '';
   cardElement.querySelector('.popup__features').appendChild(getFeatures(item.offer.features));
@@ -207,12 +226,11 @@ var createCard = function (item) {
   cardElement.querySelector('.popup__avatar').src = item.author.avatar;
   return cardElement;
 };
-// Вставляем созданные карточки в блок .map до before
+// Вставляем созданное объявление в блок с классом '.map' до filterContainer
 var makeCard = function (item) {
   fragment.appendChild(createCard(item));
-  similarCardElement.insertBefore(fragment, before);
+  similarCardElement.insertBefore(fragment, filterContainer);
 };
-
 
 // Вызов функции
 makeCard(pins[0]);
