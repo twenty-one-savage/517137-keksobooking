@@ -3,7 +3,7 @@
 var ARR_LENGTH = 8;
 var PIN_HEIGHT = 40;
 var PIN_WIDTH = 40;
-
+var PIN_HEIGHT_STICK = 22;
 var OFFER_TITLE = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
@@ -79,9 +79,6 @@ var shuffle = function (arr) {
   return arr;
 };
 
-// Второй пункт задания
-document.querySelector('.map').classList.remove('map--faded');
-
 // Третий пункт задания
 
 // Массив с пинами
@@ -140,11 +137,6 @@ var renderPins = function (arr) {
   }
   return fragment;
 };
-
-// Четвертый пункт задания
-
-// Вставляем содержимое фрагмента (пины) в DOM-дерево
-similarListElement.appendChild(renderPins(pins));
 
 // Пятый пункт задания
 
@@ -233,4 +225,71 @@ var makeCard = function (item) {
 };
 
 // Вызов функции
-makeCard(pins[0]);
+// makeCard(pins[0]);
+
+
+// MODULE4-TASK1
+var disabledElements = document.querySelectorAll('fieldset');
+var mainPin = document.querySelector('.map__pin--main');
+var mapPins = document.querySelectorAll('.map__pin');
+var map = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var addressInput = adForm.querySelector('#address');
+
+// Функция для создания заблокированного элемента (добавление аттрибута disabled)
+var getDisabledElement = function (arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].setAttribute('disabled', 'disabled');
+  }
+};
+getDisabledElement(disabledElements);
+
+// Функция для получения незаблокированного элемента (Удаление атрибута disabled)
+var getUnDisableElement = function (arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].removeAttribute('disabled');
+  }
+};
+
+// Функция для определения координат главного Пина в неактивном состоянии
+var getCoordsMainPinNonActive = function (el) {
+  var elOffsetTop = el.offsetTop + PIN_WIDTH / 2;
+  var elOffsetLeft = el.offsetLeft + PIN_HEIGHT / 2;
+  return elOffsetTop + ', ' + elOffsetLeft;
+};
+
+// Координаты главного Пина в неактивном состоянии
+addressInput.value = getCoordsMainPinNonActive(mainPin);
+
+// Переходи из неактивного состояния в активное ==================================================================
+// ==================================================================
+// ===================================
+
+// Добавляю обработчик для главного Пина, который будет переводить страницу из неактивного состояния в активное
+mainPin.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  getUnDisableElement(disabledElements);
+  // Вставляем содержимое фрагмента (пины) в DOM-дерево (То есть показываем их на странице)
+  similarListElement.appendChild(renderPins(pins));
+  addressInput.value = getCoordsMainPinActive(mainPin);
+});
+
+// Функция для нахождения координат главного Пина в активном состоянии
+var getCoordsMainPinActive = function (el) {
+  var elOffsetTop = el.offsetTop + PIN_HEIGHT + PIN_HEIGHT_STICK;
+  var elOffsetLeft = el.offsetLeft + PIN_WIDTH / 2;
+  return elOffsetTop + ', ' + elOffsetLeft;
+};
+
+// Функция для вывода объявления по клику
+var addThumbnailClickHandler = function (thumbnail, item) {
+  thumbnail.addEventListener('click', function () {
+    makeCard(item);
+  });
+};
+
+for (var i = 0; i < mapPins.length; i++) {
+  addThumbnailClickHandler(mapPins[i], pins[i]);
+}
+
